@@ -12,16 +12,13 @@ AgentBox 是一款面向开发者的开源 macOS AI 工作台，将 AI 会话、
 ### AI 工作台
 
 展示会话列表、终端交互、输入框、工具箱和文档上下文面板。
-
+<img width="521" height="480" alt="image" src="https://github.com/user-attachments/assets/343bc27f-df16-4007-a3b3-6b1102529121" />
 <img width="1512" height="949" alt="image" src="https://github.com/user-attachments/assets/eadb805e-eb3b-44e7-8e7c-9a4b439d4775" />
 <img width="1679" height="1046" alt="image" src="https://github.com/user-attachments/assets/13f16d43-d84c-4cad-b866-f81df943dc82" />
 <img width="1680" height="1050" alt="image" src="https://github.com/user-attachments/assets/5088b9ee-5438-45a3-b35a-04b601a6c7cd" />
 <img width="1680" height="1020" alt="image" src="https://github.com/user-attachments/assets/19b900f6-4704-4cca-92af-b9385b584490" />
 <img width="1680" height="1050" alt="image" src="https://github.com/user-attachments/assets/171554a6-7fed-4900-a8d3-d6840d7bafbe" />
 <img width="1680" height="1050" alt="image" src="https://github.com/user-attachments/assets/9dea9ea9-dccf-472c-a2b4-3ca0480daf1b" />
-会话创建
-
-<img width="521" height="480" alt="image" src="https://github.com/user-attachments/assets/343bc27f-df16-4007-a3b3-6b1102529121" />
 
 会话支持GUI预览切换
 <img width="1680" height="1050" alt="image" src="https://github.com/user-attachments/assets/0f871aca-5796-473d-8d5b-b147514a44ac" />
