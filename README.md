@@ -21,6 +21,7 @@ AgentBox 是一款面向开发者的开源 macOS AI 工作台，将 AI 会话、
 <img width="1680" height="1050" alt="image" src="https://github.com/user-attachments/assets/171554a6-7fed-4900-a8d3-d6840d7bafbe" />
 <img width="1680" height="1050" alt="image" src="https://github.com/user-attachments/assets/9dea9ea9-dccf-472c-a2b4-3ca0480daf1b" />
 会话创建
+
 <img width="521" height="480" alt="image" src="https://github.com/user-attachments/assets/343bc27f-df16-4007-a3b3-6b1102529121" />
 
 
@@ -41,7 +42,8 @@ AgentBox 是一款面向开发者的开源 macOS AI 工作台，将 AI 会话、
 
 展示 Agent 基本信息、模型、工作目录、系统提示词、行为规则、Skill、知识库和 MCP 配置。
 <img width="1110" height="920" alt="image" src="https://github.com/user-attachments/assets/15fef9e4-759b-4e6c-879b-14deeef90083" />
-<img width="1680" height="1050" alt="image" src="https://github.com/user-attachments/assets/0e364e41-5c4e-45d0-a9fd-7069cb2f42c9" />
+<img width="1112" height="1737" alt="image" src="https://github.com/user-attachments/assets/078321e5-752a-45e0-bb3b-8e6dbd161be9" />
+
 
 
 <!-- ![Agent 编辑页](docs/screenshots/03-agent-editor.png) -->
@@ -82,6 +84,15 @@ AgentBox 是一款面向开发者的开源 macOS AI 工作台，将 AI 会话、
 <img width="811" height="822" alt="image" src="https://github.com/user-attachments/assets/5d93a676-c012-40fe-b6e4-bdd6c03450ac" />
 
 <!-- ![快捷工具浮窗](docs/screenshots/07-quick-palette.png) -->
+
+<img width="1445" height="848" alt="image" src="https://github.com/user-attachments/assets/767a7565-f7ea-45af-a7be-07e430d2c4fc" />
+
+### 实施追踪插件
+
+实时追踪文档、代码的改动
+
+<img width="1445" height="848" alt="image" src="https://github.com/user-attachments/assets/767a7565-f7ea-45af-a7be-07e430d2c4fc" />
+<!-- ![文档预览](docs/screenshots/06-document-preview.png) -->
 
 ## 核心功能
 
