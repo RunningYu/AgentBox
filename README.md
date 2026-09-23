@@ -52,7 +52,6 @@ AgentBox 是一款面向开发者的开源 macOS AI 工作台，将 AI 会话、
 
 展示提示词、代码片段、自定义工具和工作流，以及搜索、收藏、排序和导入导出功能。
 
-截图文件：`docs/screenshots/04-toolbox.png`
 <img width="1680" height="1050" alt="image" src="https://github.com/user-attachments/assets/3d4c5903-a5aa-4722-b8da-b280ddff1586" />
 
 <!-- ![工具箱](docs/screenshots/04-toolbox.png) -->
@@ -67,13 +66,6 @@ AgentBox 是一款面向开发者的开源 macOS AI 工作台，将 AI 会话、
 
 <!-- ![File 工作区](docs/screenshots/05-file-workspace.png) -->
 
-### 文档预览
-
-展示 Markdown、Word、PDF、图片或代码文件在 File 工作区中的预览效果。
-
-截图文件：`docs/screenshots/06-document-preview.png`
-
-<!-- ![文档预览](docs/screenshots/06-document-preview.png) -->
 
 ### 快捷工具浮窗
 
