@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mermaid 双栏预览 Demo</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172334;
+      --muted: #738096;
+      --line: #dbe3ed;
+      --line-strong: #c7d3e1;
+      --surface: #ffffff;
+      --surface-soft: #f6f9fc;
+      --blue: #2563eb;
+      --blue-soft: #edf4ff;
+      --green: #16866a;
+      --shadow: 0 12px 34px rgba(41, 65, 94, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 980px;
+      color: var(--ink);
+      background: #f4f7fb;
+      font: 13px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+    }
+
+    button, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .app-shell {
+      min-height: 100vh;
+      padding: 24px 28px 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      max-width: 1440px;
+      margin: 0 auto 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 4px;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 5px; font-size: 22px; line-height: 1.25; }
+    .subtitle { margin-bottom: 0; color: var(--muted); }
+
+    .top-actions, .diagram-actions, .zoom-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      gap: 6px;
+      padding: 0 11px;
+      color: #334155;
+      background: var(--surface);
+      border: 1px solid var(--line-strong);
+      border-radius: 7px;
+      transition: border-color .16s ease, background .16s ease, color .16s ease, transform .16s ease;
+    }
+
+    .button:hover { color: var(--blue); border-color: #8db3ef; background: var(--blue-soft); }
+    .button:active { transform: translateY(1px); }
+    .button.primary { color: #fff; background: var(--blue); border-color: var(--blue); }
+    .button.primary:hover { color: #fff; background: #1d4ed8; }
+    .button.icon { width: 32px; padding: 0; font-size: 17px; }
+    .button:focus-visible, textarea:focus-visible { outline: 3px solid rgba(37, 99, 235, .2); outline-offset: 1px; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 16px;
+      max-width: 1440px;
+      min-height: 730px;
+      margin: 0 auto;
+    }
+
+    .outline, .document {
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .outline { padding: 16px 10px; }
+    .outline h2 { margin: 0 10px 12px; font-size: 12px; color: #526177; }
+    .outline-item {
+      display: block;
+      width: 100%;
+      padding: 8px 10px;
+      color: #556274;
+      text-align: left;
+      background: transparent;
+      border: 0;
+      border-radius: 6px;
+    }
+    .outline-item:hover, .outline-item.active { color: var(--blue); background: var(--blue-soft); }
+    .outline-item.level-2 { padding-left: 24px; }
+    .outline-item.level-3 { padding-left: 38px; font-size: 12px; }
+
+    .document { overflow: hidden; }
+    .document-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 56px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+
+    .file-title { min-width: 0; }
+    .file-title strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-title small { display: block; overflow: hidden; max-width: 620px; color: var(--muted); text-overflow: ellipsis; white-space: nowrap; }
+
+    .document-body {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 38px 58px 100px;
+    }
+
+    .markdown-kicker { color: var(--muted); font-size: 12px; }
+    .document-body h2 { margin: 10px 0 12px; font-size: 26px; line-height: 1.3; }
+    .document-body h3 { margin: 30px 0 10px; font-size: 17px; }
+    .document-body p { color: #4b586b; }
+    .document-body code { padding: 2px 5px; color: #075985; background: #eef7ff; border-radius: 4px; }
+
+    .info-table {
+      width: 100%;
+      margin: 18px 0 30px;
+      border-collapse: collapse;
+      color: #445166;
+    }
+    .info-table th, .info-table td { padding: 10px 12px; text-align: left; border: 1px solid var(--line); }
+    .info-table th { color: #334155; background: var(--surface-soft); font-weight: 650; }
+
+    .mermaid-card {
+      overflow: hidden;
+      margin: 18px 0 32px;
+      background: #fbfdff;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+    }
+
+    .mermaid-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 48px;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mermaid-card-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .mermaid-mark { display: grid; width: 24px; height: 24px; place-items: center; color: var(--blue); background: var(--blue-soft); border-radius: 6px; font-weight: 800; }
+    .mermaid-card-title strong { font-size: 13px; }
+    .mermaid-card-title small { color: var(--muted); }
+
+    .mermaid-split {
+      display: grid;
+      grid-template-columns: minmax(250px, .86fr) minmax(330px, 1.14fr);
+      min-height: 430px;
+      transition: grid-template-columns .2s ease;
+    }
+    .mermaid-split.source-collapsed { grid-template-columns: 0 minmax(0, 1fr); }
+    .mermaid-split.preview-collapsed { grid-template-columns: minmax(0, 1fr) 0; }
+
+    .pane { min-width: 0; overflow: hidden; background: #fff; }
+    .pane + .pane { border-left: 1px solid var(--line); }
+    .pane-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 42px;
+      padding: 8px 11px;
+      color: #526177;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+    .pane-header strong { font-size: 12px; }
+    .pane-header .button { min-height: 27px; padding: 0 8px; font-size: 12px; }
+
+    .source-pane textarea {
+      display: block;
+      width: 100%;
+      min-height: 388px;
+      padding: 17px;
+      resize: vertical;
+      color: #26364b;
+      background: #fbfcfe;
+      border: 0;
+      outline: 0;
+      font: 12px/1.75 "SFMono-Regular", Menlo, Consolas, monospace;
+    }
+
+    .preview-pane { display: flex; flex-direction: column; }
+    .preview-viewport {
+      position: relative;
+      flex: 1;
+      min-height: 388px;
+      overflow: auto;
+      background: radial-gradient(circle at 50% 15%, #fff, #f7faff 75%);
+    }
+    .preview-canvas {
+      display: grid;
+      min-width: 520px;
+      min-height: 388px;
+      place-items: center;
+      padding: 34px;
+      transform-origin: center center;
+      transition: transform .16s ease;
+    }
+    .diagram-svg { width: min(100%, 600px); height: auto; overflow: visible; }
+    .diagram-svg text { fill: #24344a; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 15px; }
+    .node { fill: #eef2ff; stroke: #7895ed; stroke-width: 1.5; }
+    .node.accent { fill: #e8f7f1; stroke: #48a98c; }
+    .edge { fill: none; stroke: #566577; stroke-width: 1.5; marker-end: url(#arrow); }
+    .edge-label { fill: #66758a !important; font-size: 12px !important; }
+
+    .zoom-actions { padding: 8px 11px; border-top: 1px solid var(--line); background: #fff; }
+    .zoom-label { min-width: 52px; color: #536176; text-align: center; font-variant-numeric: tabular-nums; }
+    .copy-feedback { min-height: 20px; margin-left: auto; color: var(--green); font-size: 12px; }
+
+    .collapsed-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 430px;
+      color: var(--muted);
+      background: #fbfcfe;
+      white-space: nowrap;
+    }
+
+    .toast {
+      position: fixed;
+      right: 28px;
+      bottom: 26px;
+      z-index: 10;
+      padding: 10px 14px;
+      color: #fff;
+      background: #1f2937;
+      border-radius: 7px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, .2);
+    }
+
+    @media (max-width: 1050px) {
+      body { min-width: 0; }
+      .app-shell { padding: 16px; }
+      .topbar { display: block; }
+      .top-actions { margin-top: 15px; }
+      .workspace { grid-template-columns: 180px minmax(0, 1fr); }
+      .document-body { padding-inline: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Markdown 文档预览</p>
+        <h1>Mermaid 图双栏阅读 Demo</h1>
+        <p class="subtitle">源码负责编辑和复制，预览负责查看和缩放；两侧可独立收起。</p>
+      </div>
+      <div class="top-actions">
+        <button class="button" id="resetLayout" type="button">恢复双栏</button>
+        <button class="button primary" id="copyTop" type="button">复制 Mermaid 源码</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="outline" aria-label="Markdown 大纲">
+        <h2>文档大纲</h2>
+        <button class="outline-item active" type="button">一、方案结论</button>
+        <button class="outline-item level-2" type="button">1. 处理流程</button>
+        <button class="outline-item level-2" type="button">2. Mermaid 图预览</button>
+        <button class="outline-item level-3" type="button">2.1 源码与预览</button>
+        <button class="outline-item level-2" type="button">3. 交互说明</button>
+      </aside>
+
+      <article class="document">
+        <div class="document-toolbar">
+          <div class="file-title">
+            <strong>20260822-方案设计.md</strong>
+            <small>/tmp/agentbox-project/docs/20260822-方案设计.md</small>
+          </div>
+          <div class="top-actions">
+            <button class="button" type="button">隐藏大纲</button>
+            <button class="button" type="button">文档操作</button>
+          </div>
+        </div>
+
+        <div class="document-body">
+          <p class="markdown-kicker">更新时间：刚刚 · Markdown</p>
+          <h2>一、方案结论</h2>
+          <p>Mermaid 图在 Markdown 文档中以独立卡片展示。用户可以只保留图形预览，也可以只保留源码编辑区，避免图形过小时看不清。</p>
+
+          <h3>1. 处理流程</h3>
+          <table class="info-table">
+            <thead><tr><th>能力</th><th>交互</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>源码区</td><td>可编辑、可复制</td><td>支持直接修改 Mermaid 文本</td></tr>
+              <tr><td>预览区</td><td>可收起、可缩放</td><td>只放大图形，不改变文档字号</td></tr>
+              <tr><td>状态</td><td>本地记忆</td><td>下次打开保持上次布局和比例</td></tr>
+            </tbody>
+          </table>
+
+          <h3>2. Mermaid 图预览</h3>
+          <p>下面是嵌入 Markdown 的 Mermaid 区块。点击源码区的收起按钮，可以让预览图获得完整宽度。</p>
+
+          <section class="mermaid-card" aria-label="Mermaid 图预览">
+            <header class="mermaid-card-header">
+              <div class="mermaid-card-title">
+                <span class="mermaid-mark">M</span>
+                <div><strong>流程图</strong><small> · mermaid</small></div>
+              </div>
+              <div class="diagram-actions">
+                <button class="button" id="toggleSource" type="button">收起源码</button>
+                <button class="button" id="togglePreview" type="button">收起预览</button>
+                <button class="button" id="copyDiagram" type="button">复制源码</button>
+              </div>
+            </header>
+
+            <div class="mermaid-split" id="splitLayout">
+              <section class="pane source-pane" id="sourcePane" aria-label="Mermaid 源码">
+                <div class="pane-header">
+                  <strong>源码</strong>
+                  <span>可编辑</span>
+                </div>
+                <textarea id="sourceText" spellcheck="false">flowchart TD
+  A[输入 Mermaid 文本] --> B{语法是否正确}
+  B -->|是| C[实时渲染预览]
+  B -->|否| D[展示错误信息]
+  C --> E[复制或下载 SVG/PNG]</textarea>
+              </section>
+
+              <section class="pane preview-pane" id="previewPane" aria-label="Mermaid 预览">
+                <div class="pane-header">
+                  <strong>预览</strong>
+                  <span>图形缩放不会影响文档布局</span>
+                </div>
+                <div class="preview-viewport">
+                  <div class="preview-canvas" id="previewCanvas">
+                    <svg class="diagram-svg" viewBox="0 0 660 510" role="img" aria-label="Mermaid 流程图">
+                      <defs>
+                        <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 z" fill="#566577" /></marker>
+                      </defs>
+                      <path class="edge" d="M330 92 L330 151" />
+                      <path class="edge" d="M285 242 L180 345" />
+                      <path class="edge" d="M375 242 L480 345" />
+                      <path class="edge" d="M180 410 L180 452 L330 452" />
+                      <text class="edge-label" x="214" y="301">是</text>
+                      <text class="edge-label" x="437" y="301">否</text>
+                      <rect class="node" x="205" y="28" width="250" height="64" rx="2" />
+                      <text x="330" y="66" text-anchor="middle">输入 Mermaid 文本</text>
+                      <polygon class="node" points="330,151 420,241 330,331 240,241" />
+                      <text x="330" y="246" text-anchor="middle">语法是否正确</text>
+                      <rect class="node accent" x="55" y="345" width="250" height="64" rx="2" />
+                      <text x="180" y="383" text-anchor="middle">实时渲染预览</text>
+                      <rect class="node" x="355" y="345" width="250" height="64" rx="2" />
+                      <text x="480" y="383" text-anchor="middle">展示错误信息</text>
+                      <rect class="node accent" x="205" y="452" width="250" height="44" rx="2" />
+                      <text x="330" y="479" text-anchor="middle">复制或下载 SVG/PNG</text>
+                    </svg>
+                  </div>
+                </div>
+                <div class="zoom-actions">
+                  <button class="button icon" id="zoomOut" aria-label="缩小 Mermaid 图" title="缩小" type="button">−</button>
+                  <span class="zoom-label" id="zoomLabel">100%</span>
+                  <button class="button icon" id="zoomIn" aria-label="放大 Mermaid 图" title="放大" type="button">＋</button>
+                  <button class="button" id="zoomReset" type="button">重置</button>
+                  <span class="copy-feedback" id="copyFeedback" aria-live="polite"></span>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <h3>3. 交互说明</h3>
+          <p>源码变更后，实际版本会重新解析图形。解析失败时保留源码并在预览侧显示错误，不会让整个 Markdown 文档消失。</p>
+        </div>
+      </article>
+    </main>
+  </div>
+
+  <script>
+    const splitLayout = document.getElementById('splitLayout');
+    const sourceText = document.getElementById('sourceText');
+    const previewCanvas = document.getElementById('previewCanvas');
+    const zoomLabel = document.getElementById('zoomLabel');
+    const copyFeedback = document.getElementById('copyFeedback');
+    const toggleSource = document.getElementById('toggleSource');
+    const togglePreview = document.getElementById('togglePreview');
+    let zoom = 1;
+    let sourceCollapsed = false;
+    let previewCollapsed = false;
+
+    function renderLayout() {
+      splitLayout.classList.toggle('source-collapsed', sourceCollapsed);
+      splitLayout.classList.toggle('preview-collapsed', previewCollapsed);
+      toggleSource.textContent = sourceCollapsed ? '显示源码' : '收起源码';
+      togglePreview.textContent = previewCollapsed ? '显示预览' : '收起预览';
+    }
+
+    function renderZoom() {
+      previewCanvas.style.transform = `scale(${zoom})`;
+      zoomLabel.textContent = `${Math.round(zoom * 100)}%`;
+    }
+
+    function showCopied() {
+      copyFeedback.textContent = '已复制 Mermaid 源码';
+      window.clearTimeout(showCopied.timer);
+      showCopied.timer = window.setTimeout(() => { copyFeedback.textContent = ''; }, 2200);
+    }
+
+    async function copySource() {
+      try {
+        await navigator.clipboard.writeText(sourceText.value);
+      } catch {
+        sourceText.focus();
+        sourceText.select();
+        document.execCommand('copy');
+        sourceText.setSelectionRange(sourceText.value.length, sourceText.value.length);
+      }
+      showCopied();
+    }
+
+    toggleSource.addEventListener('click', () => {
+      sourceCollapsed = !sourceCollapsed;
+      if (sourceCollapsed) previewCollapsed = false;
+      renderLayout();
+    });
+
+    togglePreview.addEventListener('click', () => {
+      previewCollapsed = !previewCollapsed;
+      if (previewCollapsed) sourceCollapsed = false;
+      renderLayout();
+    });
+
+    document.getElementById('resetLayout').addEventListener('click', () => {
+      sourceCollapsed = false;
+      previewCollapsed = false;
+      renderLayout();
+    });
+
+    document.getElementById('zoomIn').addEventListener('click', () => {
+      zoom = Math.min(2.2, +(zoom + .1).toFixed(1));
+      renderZoom();
+    });
+
+    document.getElementById('zoomOut').addEventListener('click', () => {
+      zoom = Math.max(1, +(zoom - .1).toFixed(1));
+      renderZoom();
+    });
+
+    document.getElementById('zoomReset').addEventListener('click', () => {
+      zoom = 1;
+      renderZoom();
+    });
+
+    document.getElementById('copyDiagram').addEventListener('click', copySource);
+    document.getElementById('copyTop').addEventListener('click', copySource);
+    renderLayout();
+    renderZoom();
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "AgentBox",
+  "version": "0.5.197",
+  "identifier": "com.zz.toolbox",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build && npm run build:speech-helper",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "AgentBox",
+        "width": 1120,
+        "height": 760,
+        "minWidth": 860,
+        "minHeight": 620
+      },
+      {
+        "label": "quick-palette",
+        "title": "AgentBox 快捷工具",
+        "url": "index.html?quick-palette=1",
+        "width": 720,
+        "height": 560,
+        "minWidth": 560,
+        "minHeight": 420,
+        "resizable": true,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "visibleOnAllWorkspaces": true,
+        "skipTaskbar": true,
+        "visible": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "app",
+      "dmg"
+    ],
+    "category": "DeveloperTool",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "shortDescription": "AgentBox macOS client",
+    "longDescription": "A macOS desktop client for PromptPad, AI agents, and developer workflows.",
+    "macOS": {
+      "hardenedRuntime": true,
+      "signingIdentity": "-",
+      "entitlements": "entitlements.plist"
+    },
+    "resources": ["resources/AgentBoxSpeechHelper.app"]
+  }
+}
